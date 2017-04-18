@@ -3,6 +3,7 @@ package world.domain;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -21,8 +22,9 @@ public class Country {
 	private String region;
 	private long population;
 	
+		
 	//Capital is a reference to a City object
-	@OneToOne
+	@OneToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name = "capital")
 	private City capital;
 	
