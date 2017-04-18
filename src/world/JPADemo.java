@@ -4,6 +4,7 @@ import java.util.List;
 import javax.persistence.*;
 import world.domain.*;
 import java.util.Scanner;
+import java.util.Set;
 
 public class JPADemo {
 	
@@ -24,8 +25,24 @@ public class JPADemo {
 		query.setParameter("name",name);
 		List<City> cities = query.getResultList();
 		System.out.printf("Found %d matches for %s\n", cities.size(), name);
-		for(City c : cities) System.out.println(c);
+		for(City c : cities) {
+			System.out.print(c);
+			System.out.println(" located in " + c.getCountry().getName());
+		}
 	}
+	
+	public static List<City> findCitiesByCountryCode(String countryCode){
+		EntityManagerFactory factory =
+				Persistence.createEntityManagerFactory("world");
+		EntityManager em = factory.createEntityManager();
+		Query query = 
+				em.createQuery("SELECT c from City c where c.country.code = :countryCode");
+		query.setParameter("countryCode", countryCode);
+		List<City> cities = query.getResultList();
+		
+		return cities;
+	}
+	
 	
 	public static void findCountry(String countryName){
 		
@@ -36,8 +53,28 @@ public class JPADemo {
 				em.createQuery("SELECT distinct d from Country d where d.name = :name");
 		query.setParameter("name", countryName);
 		List<Country> countries = query.getResultList();
-		System.out.println(countries.get(0));
-		System.out.println(countries.size());
+		
+		if (countries.size() != 0) {
+			Country country = countries.get(0);
+			System.out.println(country);
+			System.out.println("The capital city is " + country.getCapital());
+			System.out.println("Cities in " + country.getName());
+						
+			List<City> countryList = findCitiesByCountryCode(country.getCode());
+			country.setCities(countryList);		
+			
+			for (City city : country.getCities()){
+				System.out.println(city);
+			}
+			System.out.println("");
+			
+		}
+		else{
+			System.out.println("No matches for " + countryName);
+		}
+		
+		
+		
 		
 	}
 	
@@ -51,7 +88,7 @@ public class JPADemo {
 			
 			System.out.println("Country to find: ");
 			answer = sc.next();
-			if (answer.equals("quit")){
+			if (answer.equalsIgnoreCase("quit")){
 				askCountry = false;
 				System.out.println("Goodbye dear programmer, please return another time!");
 				break;
@@ -60,8 +97,11 @@ public class JPADemo {
 			}
 			
 				
-			
 		}
-		
+			
+				
+			
 	}
+		
 }
+

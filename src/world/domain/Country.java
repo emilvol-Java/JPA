@@ -1,7 +1,14 @@
 package world.domain;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 
 @Entity
@@ -9,22 +16,37 @@ public class Country {
 	
 	@Id
 	private String code;
-	private String name;
+	private String name;	
 	private String continent;
 	private String region;
 	private long population;
 	
+	//Capital is a reference to a City object
+	@OneToOne
+	@JoinColumn(name = "capital")
+	private City capital;
 	
-	protected Country(String code, String name, String continent, String region, long population) {
-		super();
-		this.code = code;
+	@OneToMany(mappedBy="country", fetch=FetchType.LAZY)
+	private Set<City> cities;		
+	
+	public Set<City> getCities() {
+		return cities;
+	}
+
+
+
+	public void setCities(List<City> cities) {
+		for(City city: cities){
+			this.cities.add(city);
+		}
+	}
+
+	public Country(String name, String continent, long population){
 		this.name = name;
 		this.continent = continent;
-		this.region = region;
 		this.population = population;
 	}
-	
-	
+
 	protected Country() {
 		super();
 	}
@@ -83,9 +105,19 @@ public class Country {
 	}
 
 
+	public City getCapital() {
+		return capital;
+	}
+
+
+	public void setCapital(City capital) {
+		this.capital = capital;
+	}
+
+
 	@Override
 	public String toString() {
-		return name + " in " + continent + ", population " + population;
+		return name + " in " + continent + ", population " + String.format("%,d",population);
 	}
 	
 	

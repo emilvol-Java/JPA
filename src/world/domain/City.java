@@ -2,6 +2,8 @@ package world.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * A City in a country.
@@ -17,7 +19,18 @@ public class City {
 	private String district;
 	private int population;
 	
-		
+	
+	@ManyToOne
+	@JoinColumn(name="countrycode")
+	private Country country;
+	
+	public City(String name){
+		this.name = name;
+	}
+	
+	public City(){
+		super();
+	}
 	
 	// Getters and setters:
 	public Integer getId() {
@@ -46,9 +59,16 @@ public class City {
 	}
 	
 	
+	public Country getCountry() {
+		return country;
+	}
+	public void setCountry(Country country) {
+		this.country = country;
+	}
+	
 	@Override
 	public String toString() {
-		return "City [id=" + id + ", name=" + name + ", district=" + district + ", population=" + population + "]";
+		return name + "," + district + ", pop. " + String.format("%,d",population);
 	}
 	
 	
